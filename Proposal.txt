@@ -1,7 +1,8 @@
 Data Source:
-
-
+GDP Metro Data: https://www.bea.gov/data/gdp/gdp-metropolitan-area
 
 Proposal:
+
+Something related to economics. We need to combine two data sets from two different sources. Beckman reccommends thinking of a question to answer first.
 
 
