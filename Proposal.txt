@@ -1,8 +1,12 @@
 Data Source:
 GDP Metro Data: https://www.bea.gov/data/gdp/gdp-metropolitan-area
+GDP State: https://www.bea.gov/data/gdp/gdp-state
+GDP: https://www.bea.gov/data/gdp/gross-domestic-product
+PCE: https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy
+Immigration Data from Dept of Homeland Security: https://www.dhs.gov/immigration-statistics/yearbook/2017
 
 Proposal:
 
-Something related to economics. We need to combine two data sets from two different sources. Beckman reccommends thinking of a question to answer first.
+Immigration effects on the economy. Requires some data scraping and wrangling to get the data together.
 
 
