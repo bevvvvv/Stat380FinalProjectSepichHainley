@@ -5,6 +5,7 @@
 * GDP Metro Data: https://www.bea.gov/data/gdp/gdp-metropolitan-area
 * GDP State: https://www.bea.gov/data/gdp/gdp-state
 * GDP: https://www.bea.gov/data/gdp/gross-domestic-product
+* Key for GDP Tables: https://apps.bea.gov/itable/iTable.cfm?ReqID=70&step=1
 * PCE: https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy
 * Immigration Data from Dept of Homeland Security: https://www.dhs.gov/immigration-statistics/yearbook/2017
 
