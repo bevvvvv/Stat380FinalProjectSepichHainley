@@ -1,1 +1,98 @@
+---
+title: "Stat380_FinalProject_Hainley_Sepich"
+author: "Joseph Sepich and Connor Hainley"
+date: "Due: 04/30/2019"
+output: html_notebook
+---
+
+# Front matter
+
+```{r echo = FALSE}
+# always clean up R environment
+rm(list = ls())
+# load all packages here
+library(mdsr) # book package of utilities
+library(stringr) # utility package for strings
+library(tidyr) # tidyverse utilities
+library(lubridate) # date utility package
+library(data.table)
+
+# user defined functions
+
+# data
+```
+
+Links to download data from BEA:
+
+GDP by area:  https://apps.bea.gov/regional/downloadzip.cfm
+GDP: https://www.bea.gov/data/gdp/gross-domestic-product
+Homeland Security: https://www.dhs.gov/immigration-statistics/yearbook/2017
+
+
+Codes to know:
+
+* GDP in current dollars SAGDP2
+* Compensation of Employees SAGDP4
+* Real GDP in chained SAGDP9
+* Per capita real GDP SAGDP10
+
+# Compile GDP data into tables based on code
+
+```{r echo = FALSE}
+# First read in all csv files into single data table
+dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley/GDP/"
+files <- list.files(path = dataPath,
+                    pattern = ".csv$")
+bigBoii <- data.frame(stringsAsFactors = FALSE)
+for (i in 1:length(files)) {
+  bigBoii <- rbind(bigBoii, fread(file = paste0(dataPath,files[i])), fill = TRUE)
+}
+```
+
+```{r}
+write.csv(bigBoii, file = paste0(dataPath,"compositeTable.csv"))
+```
+
+```{r}
+bigBoii <- fread(file = paste0(dataPath,"compositeTable.csv"))
+# SAGDP2
+current <- bigBoii %>%
+  filter(grepl("^SAGDP2(N|S)$", TableName))
+write.csv(sag2, file = paste0(dataPath,"SAGDP2.csv"))
+```
+
+```{r}
+# SAGDP4
+compensation <- bigBoii %>%
+  filter(grepl("^SAGDP4(N|S)$", TableName))
+write.csv(sag4, file = paste0(dataPath,"SAGDP4.csv"))
+```
+
+```{r}
+# SAGDP9
+real <- bigBoii %>%
+  filter(grepl("^SAGDP9(N|S)$", TableName))
+write.csv(sag9, file = paste0(dataPath,"SAGDP9.csv"))
+```
+
+```{r}
+# SAGDP10
+perCapita <- bigBoii %>%
+  filter(grepl("^SAGDP10(N|S)$", TableName))
+write.csv(sag10, file = paste0(dataPath,"SAGDP10.csv"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
