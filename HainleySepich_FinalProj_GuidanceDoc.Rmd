@@ -1,9 +1,15 @@
 ---
 title: 'Final Project: Guidance Document'
-author: "Author-1-Name & Author-2-Name"
+author: "Connor Hainley & Joe Sepich"
 date: "Due April 30, 2019"
 output: html_notebook
 ---
+
+# Project Plan
+
+April 24 have our first two sections done (listed below) and reasses our progress
+and what else
+we need to add to the project.
 
 # Purpose
 
@@ -24,7 +30,9 @@ output: html_notebook
 
 *Description: Clear demonstration of proficiency should include proper use of 5 out of the following 6 topics from class: (+) general purpose data wrangling--e.g., filter, select mutate, summarise, arrange, group_by, etc. (+) spread & gather to stack/unstack variables (+) regular expressions (+) user-defined functions (+) loops and control flow (+) vectorized functions like the `apply` family, `purrr::map` or `dplyr::do`*
 
-(A) .Rmd Line number(s) for an example of general purpose data wrangling: 
+(A) .Rmd Line number(s) for an example of general purpose data wrangling:
+
+Made GDP tables, now scrape immigration data.
 
 
 (B) .Rmd Line number(s) for a spread & gather (or equivalent): 
@@ -46,7 +54,9 @@ output: html_notebook
 
 *Description: Clear demonstration of proficiency should include at least FOUR distinct and useful data visualizations that are relevant to purpose of the analysis. Include at least one effective visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame AND another must effectively display many--3 or more--variables. All plots must demonstrate good plotting practices.*
 
-(A) .Rmd Line number(s) for visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame: 
+(A) .Rmd Line number(s) for visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame:
+
+**Ask Beckman/Piazza**
 
 
 (B) .Rmd Line number(s) for visualization displaying many--3 or more--variables (A, B, C, & D must be four **different** plots): 
@@ -55,7 +65,7 @@ output: html_notebook
 (C) .Rmd Line number(s) for a third visualization: 
 
 
-(D) .Rmd Line number(s) for a third visualization: 
+(D) .Rmd Line number(s) for a fourth visualization: 
 
 
 
@@ -66,15 +76,15 @@ output: html_notebook
 
 (A) .Rmd Line number(s) for statistical modeling/supervised learning:  
 
+**Connor does this**
 
 (B) .Rmd Line number(s) for unsupervised learning: 
 
+**Joe will do this**
 
 (C) .Rmd Line number(s) for user-defined simulation(s): 
 
-
-(D) .Rmd Line number(s) for analysis of text data: 
-
+**Joe will do this** 
 
 (E) .Rmd Line number(s) for R tools for "big data": 
 
