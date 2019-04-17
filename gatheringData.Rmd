@@ -15,7 +15,7 @@ library(mdsr) # book package of utilities
 library(stringr) # utility package for strings
 library(tidyr) # tidyverse utilities
 library(lubridate) # date utility package
-library(data.table)
+library(data.table) # using fread function
 
 # user defined functions
 
@@ -41,6 +41,8 @@ Codes to know:
 ```{r echo = FALSE}
 # First read in all csv files into single data table
 dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley/GDP/"
+```
+```{r echo = FALSE}
 files <- list.files(path = dataPath,
                     pattern = ".csv$")
 bigBoii <- data.frame(stringsAsFactors = FALSE)
@@ -82,8 +84,14 @@ perCapita <- bigBoii %>%
 write.csv(sag10, file = paste0(dataPath,"SAGDP10.csv"))
 ```
 
-
-
+ 
+## Read in tables
+```{r}
+current <- fread(file = paste0(dataPath,"SAGDP2.csv"))
+compensation <- fread(file = paste0(dataPath,"SAGDP4.csv"))
+real <- fread(file = paste0(dataPath,"SAGDP9.csv"))
+perCapita <- fread(file = paste0(dataPath,"SAGDP10.csv"))
+```
 
 
 
