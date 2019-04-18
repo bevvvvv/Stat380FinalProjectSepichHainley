@@ -16,11 +16,14 @@ library(stringr) # utility package for strings
 library(tidyr) # tidyverse utilities
 library(lubridate) # date utility package
 library(data.table) # using fread function
+library(rvest) # web scraping package
 
 # user defined functions
+# readTables
 
 # data
 ```
+# Obtaining the data
 
 Links to download data from BEA:
 
@@ -36,7 +39,7 @@ Codes to know:
 * Real GDP in chained SAGDP9
 * Per capita real GDP SAGDP10
 
-# Compile GDP data into tables based on code
+## Compile GDP data into tables based on code
 
 ```{r echo = FALSE}
 # First read in all csv files into single data table
@@ -83,7 +86,21 @@ perCapita <- bigBoii %>%
   filter(grepl("^SAGDP10(N|S)$", TableName))
 write.csv(sag10, file = paste0(dataPath,"SAGDP10.csv"))
 ```
-
+ 
+## Scraping Immigration statistics 
+ 
+```{r}
+# returns immigration table found on the page of a specific url
+readTable <- function(url) {
+  table <- url %>%
+            read_html() %>%
+            html_nodes(xpath=paste0('/html/body/div[2]/section/div/div/div[2]/',
+                                    'div/section/div/div/div/article/div[1]/',
+                                    'div[2]/div/div/table')) %>%
+            html_table()
+  table <- table[[1]]
+}
+```
  
 ## Read in tables
 ```{r}
