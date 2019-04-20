@@ -1,7 +1,7 @@
 ---
 title: "Stat380_FinalProject_Hainley_Sepich"
 author: "Joseph Sepich and Connor Hainley"
-date: "04/30/2019"
+date: "Due: 04/30/2019"
 output: 
   html_document:
     keep_md: yes
