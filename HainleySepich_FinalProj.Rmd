@@ -2,7 +2,10 @@
 title: "Stat380_FinalProject_Hainley_Sepich"
 author: "Joseph Sepich and Connor Hainley"
 date: "Due: 04/30/2019"
-output: html_notebook
+output: 
+  html_document:
+    keep_md: yes
+  html_notebook: default
 ---
 
 # Front matter
@@ -44,12 +47,13 @@ Codes to know:
 
 ```{r echo = FALSE}
 # First read in all csv files into single data table
-dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley/GDP/"
+dataPath <- "G:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 ```
 ```{r echo = FALSE}
 files <- list.files(path = dataPath,
-                    pattern = ".csv$")
-bigBoii <- data.frame(stringsAsFactors = FALSE)
+                    pattern = "ALL_AREAS_[0-9]*_[0-9]*.csv$")
+bigBoii <- data.frame(GeoFIPS = character(), Region = character(),
+                      stringsAsFactors = FALSE)
 for (i in 1:length(files)) {
   bigBoii <- rbind(bigBoii, fread(file = paste0(dataPath,files[i])), fill = TRUE)
 }
@@ -64,28 +68,28 @@ bigBoii <- fread(file = paste0(dataPath,"compositeTable.csv"))
 # SAGDP2
 current <- bigBoii %>%
   filter(grepl("^SAGDP2(N|S)$", TableName))
-write.csv(sag2, file = paste0(dataPath,"SAGDP2.csv"))
+write.csv(current, file = paste0(dataPath,"SAGDP2.csv"))
 ```
 
 ```{r}
 # SAGDP4
 compensation <- bigBoii %>%
   filter(grepl("^SAGDP4(N|S)$", TableName))
-write.csv(sag4, file = paste0(dataPath,"SAGDP4.csv"))
+write.csv(compensation, file = paste0(dataPath,"SAGDP4.csv"))
 ```
 
 ```{r}
 # SAGDP9
 real <- bigBoii %>%
   filter(grepl("^SAGDP9(N|S)$", TableName))
-write.csv(sag9, file = paste0(dataPath,"SAGDP9.csv"))
+write.csv(real, file = paste0(dataPath,"SAGDP9.csv"))
 ```
 
 ```{r}
 # SAGDP10
 perCapita <- bigBoii %>%
   filter(grepl("^SAGDP10(N|S)$", TableName))
-write.csv(sag10, file = paste0(dataPath,"SAGDP10.csv"))
+write.csv(perCapita, file = paste0(dataPath,"SAGDP10.csv"))
 ```
  
 ## Scraping Immigration statistics 
@@ -163,6 +167,7 @@ immigrants <- immigrants %>%
  
 ## Read in tables
 ```{r}
+dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-12),"GDP/")
 current <- fread(file = paste0(dataPath,"SAGDP2.csv"))
 compensation <- fread(file = paste0(dataPath,"SAGDP4.csv"))
 real <- fread(file = paste0(dataPath,"SAGDP9.csv"))
