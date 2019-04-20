@@ -11,172 +11,22 @@ output:
 # Front matter
 
 
-```
-## Warning: package 'mdsr' was built under R version 3.5.3
-```
+```r
+# always clean up R environment
+rm(list = ls())
+# load all packages here
+library(mdsr) # book package of utilities
+library(stringr) # utility package for strings
+library(tidyr) # tidyverse utilities
+library(lubridate) # date utility package
+library(data.table) # using fread function
+library(rvest) # web scraping package
+library(readxl) # read execel files
 
-```
-## Warning: package 'mosaic' was built under R version 3.5.2
-```
+# user defined functions
+# readTables
 
-```
-## Loading required package: dplyr
-```
-
-```
-## Warning: package 'dplyr' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```
-## Loading required package: lattice
-```
-
-```
-## Loading required package: ggformula
-```
-
-```
-## Warning: package 'ggformula' was built under R version 3.5.2
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```
-## Loading required package: ggstance
-```
-
-```
-## Warning: package 'ggstance' was built under R version 3.5.2
-```
-
-```
-## 
-## Attaching package: 'ggstance'
-```
-
-```
-## The following objects are masked from 'package:ggplot2':
-## 
-##     geom_errorbarh, GeomErrorbarh
-```
-
-```
-## 
-## New to ggformula?  Try the tutorials: 
-## 	learnr::run_tutorial("introduction", package = "ggformula")
-## 	learnr::run_tutorial("refining", package = "ggformula")
-```
-
-```
-## Loading required package: mosaicData
-```
-
-```
-## Warning: package 'mosaicData' was built under R version 3.5.2
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## 
-## The 'mosaic' package masks several functions from core packages in order to add 
-## additional features.  The original behavior of these functions should not be affected by this.
-## 
-## Note: If you use the Matrix package, be sure to load it BEFORE loading mosaic.
-```
-
-```
-## 
-## In accordance with CRAN policy, the 'mdsr' package 
-##            no longer attaches
-## the 'tidyverse' package automatically.
-## You may need to 'library(tidyverse)' in order to 
-##            use certain functions.
-```
-
-```
-## Warning: package 'tidyr' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'tidyr'
-```
-
-```
-## The following object is masked from 'package:Matrix':
-## 
-##     expand
-```
-
-```
-## Warning: package 'lubridate' was built under R version 3.5.2
-```
-
-```
-## 
-## Attaching package: 'lubridate'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     date
-```
-
-```
-## Warning: package 'data.table' was built under R version 3.5.3
-```
-
-```
-## 
-## Attaching package: 'data.table'
-```
-
-```
-## The following objects are masked from 'package:lubridate':
-## 
-##     hour, isoweek, mday, minute, month, quarter, second, wday,
-##     week, yday, year
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     between, first, last
-```
-
-```
-## Warning: package 'rvest' was built under R version 3.5.3
-```
-
-```
-## Loading required package: xml2
-```
-
-```
-## Warning: package 'readxl' was built under R version 3.5.2
+# data
 ```
 # Obtaining the data
 
@@ -197,129 +47,19 @@ Codes to know:
 ## Compile GDP data into tables based on code
 
 
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 62. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 62. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
+```r
+# First read in all csv files into single data table
+dataPath <- "G:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 ```
 
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5462. Expected 29 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early
-## on line 4. Expected 30 fields but found 33. Consider fill=TRUE and
-## comment.char=. First discarded non-empty line: <<"00000" ,"United
-## States*", ,SAGDP2N,"Gross domestic product (GDP) by state","Millions of
-## current dollars",3,"11"," Agriculture, forestry, fishing, and hunting",
-## 108636.5,99756.5,92590.4,98311.7,99835.6,95629.0,113953.5,142945.2,128346.7,125130.4,144062.3,147244.0,129967.8,146299.0,180944.9,179572.7,215600.6,200841.6,181220.2,164913.2,169225.2>>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early
-## on line 4. Expected 44 fields but found 46. Consider fill=TRUE and
-## comment.char=. First discarded non-empty line: <<"00000" ,"United
-## States", ,SAGDP2S,"Gross domestic product (GDP) by state","Millions
-## of current dollars",3,"A"," Agriculture, forestry, and fishing",
-## 20385.9,19502.3,22274.3,23338.1,22800.9,23505.5,26195.5,27297.9,29423.8,34306.8,51974.9,50099.2,51707.9,50278.6,50787.2,59091.9,69972.7,62566.8,76827.0,73278.6,58978.9,79601.9,80516.3,78229.3,84294.0,85182.0,98724.7,104602.3,98401.9,109105.2,98846.0,116215.4,103036.4,129420.2,126638.5>>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5466. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 44 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5466. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 44 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5466. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 44 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5466. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 44 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5466. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 44 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 5462. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early on line
-## 4682. Expected 30 fields but found 1. Consider fill=TRUE and comment.char=.
-## First discarded non-empty line: <<"Note: See the included footnote file.">>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early
-## on line 4. Expected 30 fields but found 33. Consider fill=TRUE and
-## comment.char=. First discarded non-empty line: <<"00000" ,"United
-## States", ,SAGDP9N,"Real GDP by state","Millions of chained 2012
-## dollars",3,"11"," Agriculture, forestry, fishing, and hunting",
-## 140286.0,136879.5,141020.5,161798.9,156154.9,161617.5,174162.5,188091.9,196126.0,199349.4,176568.7,180294.9,199976.1,193856.2,186395.0,179573.0,209387.5,210511.6,224592.0,234231.4,222984.8>>
-```
-
-```
-## Warning in fread(file = paste0(dataPath, files[i])): Stopped early
-## on line 4. Expected 30 fields but found 32. Consider fill=TRUE and
-## comment.char=. First discarded non-empty line: <<"00000" ,"United
-## States", ,SAGDP9S,"Real GDP by state","Millions of chained
-## 1997 dollars",3,"A"," Agriculture, forestry, and fishing",
-## 56532.8,55047.6,59758.9,59377.3,75038.6,79465.3,57685.9,74980.5,89167.9,89557.5,92592.3,85159.3,94542.1,100949.4,102649.4,113466.4,99239.7,119176.7,103793.3,116476.3,126638.5>>
+```r
+files <- list.files(path = dataPath,
+                    pattern = "ALL_AREAS_[0-9]*_[0-9]*.csv$")
+bigBoii <- data.frame(GeoFIPS = character(), Region = character(),
+                      stringsAsFactors = FALSE)
+for (i in 1:length(files)) {
+  bigBoii <- rbind(bigBoii, fread(file = paste0(dataPath,files[i])), fill = TRUE)
+}
 ```
 
 

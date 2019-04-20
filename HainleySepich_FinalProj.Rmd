@@ -10,7 +10,7 @@ output:
 
 # Front matter
 
-```{r echo = FALSE}
+```{r message = FALSE, warning = FALSE}
 # always clean up R environment
 rm(list = ls())
 # load all packages here
@@ -45,11 +45,11 @@ Codes to know:
 
 ## Compile GDP data into tables based on code
 
-```{r echo = FALSE}
+```{r}
 # First read in all csv files into single data table
 dataPath <- "G:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 ```
-```{r echo = FALSE}
+```{r message = FALSE, warning = FALSE}
 files <- list.files(path = dataPath,
                     pattern = "ALL_AREAS_[0-9]*_[0-9]*.csv$")
 bigBoii <- data.frame(GeoFIPS = character(), Region = character(),
