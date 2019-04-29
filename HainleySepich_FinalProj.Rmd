@@ -47,31 +47,25 @@ Codes to know:
 
 ```{r}
 # First read in all csv files into single data table
-dataPath <- "G:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
+dataPath <- "C:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 ```
-```{r message = FALSE, warning = FALSE}
+
+```{r}
 files <- list.files(path = dataPath,
-                    pattern = "ALL_AREAS_[0-9]*_[0-9]*.csv$")
-bigBoii <- data.frame(GeoFIPS = character(), Region = character(),
-                      stringsAsFactors = FALSE)
-for (i in 1:length(files)) {
-  bigBoii <- rbind(bigBoii, fread(file = paste0(dataPath,files[i])), fill = TRUE)
-}
-```
-
-```{r}
-write.csv(bigBoii, file = paste0(dataPath,"compositeTable.csv"))
-```
-
-```{r}
-bigBoii <- fread(file = paste0(dataPath,"compositeTable.csv"))
+                    pattern = "^SAGDP2(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP2
-current <- bigBoii %>%
-  filter(grepl("^SAGDP2(N|S)$", TableName))
+current <- fread(file = paste0(dataPath,files[1]))
+head(current)
+current <- current %>%
+    left_join(fread(file = paste0(dataPath,files[2])),
+              by = c("GeoFIPS","Region","GeoName","TableName","ComponentName",
+                     "Unit","IndustryId","IndustryClassification","Description"))
 write.csv(current, file = paste0(dataPath,"SAGDP2.csv"))
 ```
 
 ```{r}
+files <- list.files(path = dataPath,
+                    pattern = "^SAGDP4(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP4
 compensation <- bigBoii %>%
   filter(grepl("^SAGDP4(N|S)$", TableName))
@@ -79,6 +73,8 @@ write.csv(compensation, file = paste0(dataPath,"SAGDP4.csv"))
 ```
 
 ```{r}
+files <- list.files(path = dataPath,
+                    pattern = "^SAGDP9(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP9
 real <- bigBoii %>%
   filter(grepl("^SAGDP9(N|S)$", TableName))
@@ -86,6 +82,8 @@ write.csv(real, file = paste0(dataPath,"SAGDP9.csv"))
 ```
 
 ```{r}
+files <- list.files(path = dataPath,
+                    pattern = "^SAGDP10(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP10
 perCapita <- bigBoii %>%
   filter(grepl("^SAGDP10(N|S)$", TableName))
