@@ -168,10 +168,40 @@ write.csv(immigrants, file = paste0(dataPath,"immigration.csv"))
 ```{r}
 immigrants <- fread(file = paste0(dataPath,"immigration.csv"))
 dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-12),"GDP/")
-current <- fread(file = paste0(dataPath,"SAGDP2.csv"))
-compensation <- fread(file = paste0(dataPath,"SAGDP4.csv"))
-real <- fread(file = paste0(dataPath,"SAGDP9.csv"))
-perCapita <- fread(file = paste0(dataPath,"SAGDP10.csv"))
+nominalGDP <- fread(file = paste0(dataPath,"SAGDP2.csv"))
+compensationGDP <- fread(file = paste0(dataPath,"SAGDP4.csv"))
+realGDP <- fread(file = paste0(dataPath,"SAGDP9.csv"))
+perCapitaGDP <- fread(file = paste0(dataPath,"SAGDP10.csv"))
+```
+
+## Join two data sets
+```{r}
+econData <- nominalGDP %>%
+  rbind(compensationGDP) %>%
+  rbind(realGDP) %>%
+  rbind(perCapitaGDP) %>%
+  filter(nchar(TableName) != 0)
+# Name GDP years
+names <- colnames(econData)
+for (i in 1:length(names)) {
+  if(!is.na(as.numeric(names[i]))) {
+    econData[,paste0(names[i])] <- as.numeric(econData[,paste0(names[i])])
+    names[i] <- paste0("GDP: ",names[i])
+  }
+}
+colnames(econData) <- names
+# Name immigation years
+names <- colnames(immigrants)
+for (i in 1:length(names)) {
+  if(!is.na(as.numeric(names[i]))) {
+    names[i] <- paste0("Immigrants: ",names[i])
+  }
+}
+colnames(immigrants) <- names
+# Change total name
+immigrants[1,1] <- "United States*"
+compiledData <- econData %>%
+  left_join(immigrants, by = c("GeoName" = "State or Territory of Residence"))
 ```
 
 
