@@ -47,18 +47,23 @@ Codes to know:
 
 ```{r}
 # First read in all csv files into single data table
-dataPath <- "C:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
+dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 ```
 
 ```{r}
 files <- list.files(path = dataPath,
                     pattern = "^SAGDP2(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP2
-current <- fread(file = paste0(dataPath,files[1]))
-head(current)
+current <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
 current <- current %>%
-    left_join(fread(file = paste0(dataPath,files[2])),
-              by = c("GeoFIPS","Region","GeoName","TableName","ComponentName",
+  select(-c(TableName))
+head(current)
+earlier <- fread(file = paste0(dataPath,files[2]), fill = TRUE) %>%
+  select(-c(TableName, "1997"))
+head(earlier)
+blah <- current %>%
+    left_join(earlier,
+              by = c("GeoFIPS","Region","GeoName","ComponentName",
                      "Unit","IndustryId","IndustryClassification","Description"))
 write.csv(current, file = paste0(dataPath,"SAGDP2.csv"))
 ```
