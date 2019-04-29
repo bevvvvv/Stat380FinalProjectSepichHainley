@@ -52,47 +52,38 @@ dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
 
 ```{r}
 files <- list.files(path = dataPath,
-                    pattern = "^SAGDP2(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
+                    pattern = "^SAGDP2N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP2
-current <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
-current <- current %>%
-  select(-c(TableName))
-head(current)
-earlier <- fread(file = paste0(dataPath,files[2]), fill = TRUE) %>%
-  select(-c(TableName, "1997"))
-head(earlier)
-blah <- current %>%
-    left_join(earlier,
-              by = c("GeoFIPS","Region","GeoName","ComponentName",
-                     "Unit","IndustryId","IndustryClassification","Description"))
-write.csv(current, file = paste0(dataPath,"SAGDP2.csv"))
+nominalGDP <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
+head(nominalGDP)
+write.csv(nominalGDP, file = paste0(dataPath,"SAGDP2.csv"))
 ```
 
 ```{r}
 files <- list.files(path = dataPath,
-                    pattern = "^SAGDP4(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
+                    pattern = "^SAGDP4N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP4
-compensation <- bigBoii %>%
-  filter(grepl("^SAGDP4(N|S)$", TableName))
-write.csv(compensation, file = paste0(dataPath,"SAGDP4.csv"))
+compensationGDP <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
+head(compensationGDP)
+write.csv(compensationGDP, file = paste0(dataPath,"SAGDP4.csv"))
 ```
 
 ```{r}
 files <- list.files(path = dataPath,
-                    pattern = "^SAGDP9(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
+                    pattern = "^SAGDP9N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP9
-real <- bigBoii %>%
-  filter(grepl("^SAGDP9(N|S)$", TableName))
-write.csv(real, file = paste0(dataPath,"SAGDP9.csv"))
+realGDP <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
+head(realGDP)
+write.csv(realGDP, file = paste0(dataPath,"SAGD92.csv"))
 ```
 
 ```{r}
 files <- list.files(path = dataPath,
-                    pattern = "^SAGDP10(N|S)__ALL_AREAS_[0-9]*_[0-9]*.csv$")
+                    pattern = "^SAGDP10N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
 # SAGDP10
-perCapita <- bigBoii %>%
-  filter(grepl("^SAGDP10(N|S)$", TableName))
-write.csv(perCapita, file = paste0(dataPath,"SAGDP10.csv"))
+perCapitaGDP <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
+head(perCapitaGDP)
+write.csv(perCapitaGDP, file = paste0(dataPath,"SAGDP10.csv"))
 ```
  
 ## Scraping Immigration statistics 
@@ -117,6 +108,7 @@ dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-4),"Immigration/")
 ```
 ```{r}
 # Scrape data from 2014-2017
+immigrants <- NA
 immigrants <- data.frame(stringsAsFactors = FALSE)
 year <- 2014
 while (year <= 2017) {
@@ -125,8 +117,7 @@ while (year <= 2017) {
   if (year == 2014) {
     immigrants <- readTable(url)
   } else {
-    immigrants <- immigrants %>%
-      inner_join(readTable(url), by = c("State or Territory of Residence"))
+    immigrants[,as.character(year)] <- readTable(url)[,as.character(year)]
   }
   year <- year + 1
 }
@@ -148,10 +139,14 @@ data2 <- data2[2:length(data2$`TABLE 33.`),]
 data2[1,1] <- data1[1,1]
 
 colnames(data1) <- as.character(unlist(data1[1,]))
-data1 = data1[-1, ]
+data1 <- data1[-1, ]
+data1 <- data1 %>%
+  select(-c("2012","2013"))
 
 colnames(data2) <- as.character(unlist(data2[1,]))
-data2 = data2[-1, ]
+data2 <- data2[-1, ]
+data2 <- data2 %>%
+  select(-c("2004"))
 
 # Convert data types to numeric to match with data1
 colsNum <- colnames(data2)
@@ -163,13 +158,15 @@ immigrants[colsNum] <- sapply(immigrants[colsNum],function(x) gsub(",","",x))
 immigrants[colsNum] <- sapply(immigrants[colsNum],as.numeric)
 
 immigrants <- immigrants %>%
-      inner_join(data1, by = c("State or Territory of Residence"))
+      left_join(data1, by = c("State or Territory of Residence"))
 immigrants <- immigrants %>%
-      inner_join(data2, by = c("State or Territory of Residence"))
+      left_join(data2, by = c("State or Territory of Residence"))
+write.csv(immigrants, file = paste0(dataPath,"immigration.csv"))
 ```
  
 ## Read in tables
 ```{r}
+immigrants <- fread(file = paste0(dataPath,"immigration.csv"))
 dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-12),"GDP/")
 current <- fread(file = paste0(dataPath,"SAGDP2.csv"))
 compensation <- fread(file = paste0(dataPath,"SAGDP4.csv"))
