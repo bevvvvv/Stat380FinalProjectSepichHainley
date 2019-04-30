@@ -209,15 +209,8 @@ compiledData <- econData %>%
 # Simulating the Romer Growth Model
 
 ```{r}
-getGDPNumbers <- function(x) {
-  cols <- grep("^(GDP:|GeoName)", names(x), value=TRUE)
-  return(x[, cols])
-}
-```
-
-```{r}
-getImmigrationNumbers <- function(x) {
-  cols <- grep("^(Immigrants:|GeoName)", names(x), value=TRUE)
+chooseCols <- function(x, regex) {
+  cols <- grep(regex, names(x), value=TRUE)
   return(x[, cols])
 }
 ```
@@ -230,8 +223,8 @@ createPopulationTable <- function() {
     filter(TableName == "SAGDP9N" & IndustryId == 1)
   per <- compiledData %>%
     filter(TableName == "SAGDP10N")
-  real <- getGDPNumbers(real)
-  per <- getGDPNumbers(per)
+  real <- chooseCols(real, "^(GDP:|GeoName)")
+  per <- chooseCols(per, "^(GDP:|GeoName)")
   pop <- real
   cols <- names(per)
   for (i in 2:length(cols)) {
@@ -245,7 +238,7 @@ createPopulationTable <- function() {
 # per capita GDP is tableName SAGDP10N
 perCapitaGDP <- compiledData %>%
   filter(TableName == "SAGDP10N")
-outputPerWorker <- getGDPNumbers(perCapitaGDP)
+outputPerWorker <- chooseCols(perCapitaGDP, "^(GDP:|GeoName)")
 head(outputPerWorker)
 ```
 
@@ -253,10 +246,29 @@ head(outputPerWorker)
 # Romer growth parameters
 beta <- 0.3
 alpha <- 0.2
-chi <- 0.0004
-
+chi <- 0.04
+# Population in millions
+population <- createPopulationTable()
+growth <- population
+cols <- names(population)
+colsGrowth <- gsub("GDP:","Growth:",cols)
+for (i in 2:length(cols)) {
+  growth[,paste0(colsGrowth[i])] <- (1 / (1 - beta)) * alpha * chi * population[,paste0(cols[i])]
+}
+growth <- chooseCols(growth, "^(Growth:|GeoName)")
+head(growth)
 ```
 
+```{r}
+# Show graph of PerCapita and growth
+years <- grep("[0-9]$", names(outputPerWorker), value=TRUE)
+years <- as.numeric(gsub("GDP: ","",years))
+totalper <- as.numeric((as.vector(outputPerWorker[1,c(2:22)])))
+data <- data.frame(year = years, output = totalper)
+data %>%
+  ggplot(aes(x = year, y = output)) +
+  geom_point()
+```
 
 
 
