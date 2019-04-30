@@ -21,7 +21,7 @@ library(lubridate) # date utility package
 library(data.table) # using fread function
 library(rvest) # web scraping package
 library(readxl) # read execel files
-library(readr)
+library(readr) # utilities
 
 # user defined functions
 # readTables
@@ -50,7 +50,6 @@ Codes to know:
 # First read in all csv files into single data table
 dataPath <- read_file('dataPath.txt')
 ```
-
 ```{r}
 files <- list.files(path = dataPath,
                     pattern = "^SAGDP2N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
@@ -125,7 +124,7 @@ while (year <= 2017) {
 # Read in and add data from 8_ - 2013
 # Table33
 # 2103 table 22
-files <- list.files(path = dataPath, pattern = ".(xls|xlxs)$")
+files <- list.files(path = dataPath, pattern = ".(xls|xlsx)$")
 data1 <- read_excel(paste0(dataPath,files[1]))
 data2 <- read_excel(paste0(dataPath,files[2]))
 
@@ -166,7 +165,7 @@ write.csv(immigrants, file = paste0(dataPath,"immigration.csv"))
 ```
  
 ## Read in tables
-```{r eval = FALSE}
+```{r eval=FALSE}
 immigrants <- fread(file = paste0(dataPath,"immigration.csv"))
 dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-12),"GDP/")
 nominalGDP <- fread(file = paste0(dataPath,"SAGDP2.csv"))
@@ -209,11 +208,67 @@ compiledData <- econData %>%
 
 # Simulating the Romer Growth Model
 
+```{r}
+chooseCols <- function(x, regex) {
+  cols <- grep(regex, names(x), value=TRUE)
+  return(x[, cols])
+}
+```
 
+```{r}
+# Returns table of population in millions
+createPopulationTable <- function() {
+  # Divide real GDP by percapita
+  real <- compiledData %>%
+    filter(TableName == "SAGDP9N" & IndustryId == 1)
+  per <- compiledData %>%
+    filter(TableName == "SAGDP10N")
+  real <- chooseCols(real, "^(GDP:|GeoName)")
+  per <- chooseCols(per, "^(GDP:|GeoName)")
+  pop <- real
+  cols <- names(per)
+  for (i in 2:length(cols)) {
+    pop[,paste0(cols[i])] <- real[,paste0(cols[i])] / per[,paste0(cols[i])]
+  }
+  return(pop)
+}
+```
 
+```{r}
+# per capita GDP is tableName SAGDP10N
+perCapitaGDP <- compiledData %>%
+  filter(TableName == "SAGDP10N")
+outputPerWorker <- chooseCols(perCapitaGDP, "^(GDP:|GeoName)")
+head(outputPerWorker)
+```
 
+```{r}
+# Romer growth parameters
+beta <- 0.3
+alpha <- 0.2
+chi <- 0.04
+# Population in millions
+population <- createPopulationTable()
+growth <- population
+cols <- names(population)
+colsGrowth <- gsub("GDP:","Growth:",cols)
+for (i in 2:length(cols)) {
+  growth[,paste0(colsGrowth[i])] <- (1 / (1 - beta)) * alpha * chi * population[,paste0(cols[i])]
+}
+growth <- chooseCols(growth, "^(Growth:|GeoName)")
+head(growth)
+```
 
-
+```{r}
+# Show graph of PerCapita and growth
+years <- grep("[0-9]$", names(outputPerWorker), value=TRUE)
+years <- as.numeric(gsub("GDP: ","",years))
+totalper <- as.numeric((as.vector(outputPerWorker[1,c(2:22)])))
+data <- data.frame(year = years, output = totalper)
+data %>%
+  ggplot(aes(x = year, y = output)) +
+  geom_point()
+```
 
 
 
