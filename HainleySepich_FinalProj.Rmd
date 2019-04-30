@@ -124,7 +124,7 @@ while (year <= 2017) {
 # Read in and add data from 8_ - 2013
 # Table33
 # 2103 table 22
-files <- list.files(path = dataPath)
+files <- list.files(path = dataPath, pattern = ".(xls|xlsx)$")
 data1 <- read_excel(paste0(dataPath,files[1]))
 data2 <- read_excel(paste0(dataPath,files[2]))
 
@@ -165,7 +165,7 @@ write.csv(immigrants, file = paste0(dataPath,"immigration.csv"))
 ```
  
 ## Read in tables
-```{r}
+```{r eval=FALSE}
 immigrants <- fread(file = paste0(dataPath,"immigration.csv"))
 dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-12),"GDP/")
 nominalGDP <- fread(file = paste0(dataPath,"SAGDP2.csv"))
@@ -209,10 +209,53 @@ compiledData <- econData %>%
 # Simulating the Romer Growth Model
 
 ```{r}
-
+getGDPNumbers <- function(x) {
+  cols <- grep("^(GDP:|GeoName)", names(x), value=TRUE)
+  return(x[, cols])
+}
 ```
 
+```{r}
+getImmigrationNumbers <- function(x) {
+  cols <- grep("^(Immigrants:|GeoName)", names(x), value=TRUE)
+  return(x[, cols])
+}
+```
 
+```{r}
+# Returns table of population in millions
+createPopulationTable <- function() {
+  # Divide real GDP by percapita
+  real <- compiledData %>%
+    filter(TableName == "SAGDP9N" & IndustryId == 1)
+  per <- compiledData %>%
+    filter(TableName == "SAGDP10N")
+  real <- getGDPNumbers(real)
+  per <- getGDPNumbers(per)
+  pop <- real
+  cols <- names(per)
+  for (i in 2:length(cols)) {
+    pop[,paste0(cols[i])] <- real[,paste0(cols[i])] / per[,paste0(cols[i])]
+  }
+  return(pop)
+}
+```
+
+```{r}
+# per capita GDP is tableName SAGDP10N
+perCapitaGDP <- compiledData %>%
+  filter(TableName == "SAGDP10N")
+outputPerWorker <- getGDPNumbers(perCapitaGDP)
+head(outputPerWorker)
+```
+
+```{r}
+# Romer growth parameters
+beta <- 0.3
+alpha <- 0.2
+chi <- 0.0004
+
+```
 
 
 
