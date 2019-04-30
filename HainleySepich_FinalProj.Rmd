@@ -47,7 +47,7 @@ Codes to know:
 
 ```{r}
 # First read in all csv files into single data table
-dataPath <- "D:\\GitRepos\\Stat380FinalProjectSepichHainley\\GDP\\"
+dataPath <- read_file('.\\dataPath.txt')
 ```
 
 ```{r}
@@ -203,6 +203,10 @@ immigrants[1,1] <- "United States*"
 compiledData <- econData %>%
   left_join(immigrants, by = c("GeoName" = "State or Territory of Residence"))
 ```
+
+
+
+# Simulating the Romer Growth Model
 
 
 

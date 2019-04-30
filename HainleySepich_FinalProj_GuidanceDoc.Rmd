@@ -24,7 +24,7 @@ we need to add to the project.
 
 (A) .Rmd Line number(s) for join operation: 
 
-
+160, 162, 203 (different sources joined in 203)
 
 ### Data Wrangling (5 of 6 required)
 
@@ -38,14 +38,17 @@ Made GDP tables, now scrape immigration data.
 (B) .Rmd Line number(s) for a spread & gather (or equivalent): 
 
 
-(C) .Rmd Line number(s) for use of regular expressions: 
+(C) .Rmd Line number(s) for use of regular expressions:
 
+55, 64, 73, 82
 
 (D) .Rmd Line number(s) for use of user-defined functions: 
 
+93
 
 (E) .Rmd Line number(s) for use of loops and/or control flow: 
 
+114, 117, 186, 195
 
 (F) .Rmd Line number(s) for use of vectorized functions: 
 
