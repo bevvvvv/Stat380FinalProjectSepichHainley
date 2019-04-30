@@ -21,6 +21,7 @@ library(lubridate) # date utility package
 library(data.table) # using fread function
 library(rvest) # web scraping package
 library(readxl) # read execel files
+library(readr) # utilities
 
 # user defined functions
 # readTables
@@ -47,9 +48,8 @@ Codes to know:
 
 ```{r}
 # First read in all csv files into single data table
-dataPath <- read_file('.\\dataPath.txt')
+dataPath <- read_file('dataPath.txt')
 ```
-
 ```{r}
 files <- list.files(path = dataPath,
                     pattern = "^SAGDP2N__ALL_AREAS_[0-9]*_[0-9]*.csv$")
@@ -74,7 +74,7 @@ files <- list.files(path = dataPath,
 # SAGDP9
 realGDP <- fread(file = paste0(dataPath,files[1]), fill = TRUE)
 head(realGDP)
-write.csv(realGDP, file = paste0(dataPath,"SAGD92.csv"))
+write.csv(realGDP, file = paste0(dataPath,"SAGDP9.csv"))
 ```
 
 ```{r}
@@ -208,7 +208,9 @@ compiledData <- econData %>%
 
 # Simulating the Romer Growth Model
 
+```{r}
 
+```
 
 
 
