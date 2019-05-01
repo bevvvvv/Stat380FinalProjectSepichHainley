@@ -1,13 +1,3 @@
----
-title: "Stat380_FinalProject_Hainley_Sepich"
-author: "Joseph Sepich and Connor Hainley"
-date: "2019-04-30"
-output: 
-  html_document:
-    keep_md: yes
-  html_notebook: default
----
-
 # Front matter
 
 
