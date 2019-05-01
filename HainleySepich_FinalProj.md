@@ -1,3 +1,13 @@
+---
+title: "Stat380_FinalProject_Hainley_Sepich"
+author: "Joseph Sepich and Connor Hainley"
+date: "2019-04-30"
+output: 
+  html_document:
+    keep_md: yes
+  html_notebook: default
+---
+
 # Front matter
 
 
@@ -1072,10 +1082,10 @@ head(timeData)
 
 ```
 ##   simsRun withoutParallel withParallel
-## 1      75        3.231332     3.870692
-## 2     200        8.685818     9.071071
-## 3     350       15.303690    15.294874
-## 4     500       21.427744    21.785135
+## 1      75        3.576450     3.668226
+## 2     200        9.459743     8.967005
+## 3     350       16.741855    16.134303
+## 4     500       24.072621    24.395423
 ```
 
 Here I wanted to show my reasoning for running without being in parallel for the
