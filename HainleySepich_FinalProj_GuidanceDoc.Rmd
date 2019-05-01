@@ -24,7 +24,7 @@ we need to add to the project.
 
 (A) .Rmd Line number(s) for join operation: 
 
-160, 162, 203 (different sources joined in 203)
+170, 172, 216 (different sources joined in 216)
 
 ### Data Wrangling (5 of 6 required)
 
@@ -32,26 +32,27 @@ we need to add to the project.
 
 (A) .Rmd Line number(s) for an example of general purpose data wrangling:
 
-Made GDP tables, now scrape immigration data.
-
+250 and a LOT more of the code
 
 (B) .Rmd Line number(s) for a spread & gather (or equivalent): 
 
+None
 
 (C) .Rmd Line number(s) for use of regular expressions:
 
-55, 64, 73, 82
+460, 518 and list.file functions
 
 (D) .Rmd Line number(s) for use of user-defined functions: 
 
-93
+102, 443, 454, 508
 
 (E) .Rmd Line number(s) for use of loops and/or control flow: 
 
-114, 117, 186, 195
+464, 514, and more!
 
 (F) .Rmd Line number(s) for use of vectorized functions: 
 
+163
 
 ### Data Visualization (all 4 required)
 
@@ -59,18 +60,19 @@ Made GDP tables, now scrape immigration data.
 
 (A) .Rmd Line number(s) for visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame:
 
-**Ask Beckman/Piazza**
-
+566
 
 (B) .Rmd Line number(s) for visualization displaying many--3 or more--variables (A, B, C, & D must be four **different** plots): 
 
+412
 
 (C) .Rmd Line number(s) for a third visualization: 
 
+376
 
 (D) .Rmd Line number(s) for a fourth visualization: 
 
-
+591, 602
 
 
 ### Data Analysis (3 of 5 required)
@@ -79,22 +81,21 @@ Made GDP tables, now scrape immigration data.
 
 (A) .Rmd Line number(s) for statistical modeling/supervised learning:  
 
-
+None
 
 (B) .Rmd Line number(s) for unsupervised learning: 
 
-**Connor will do this**
+353, 360
 
 (C) .Rmd Line number(s) for user-defined simulation(s): 
 
-**Joe will do this** 
+508, 576
 
 (D)
 
 (E) .Rmd Line number(s) for R tools for "big data": 
 
-
-
+656
 
 ### Miscelaneous (Nothing for you to report in this Guidance Document)
 
