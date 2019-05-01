@@ -13,6 +13,7 @@ output:
 ```{r message = FALSE, warning = FALSE}
 # always clean up R environment
 rm(list = ls())
+
 # load all packages here
 library(mdsr) # book package of utilities
 library(stringr) # utility package for strings
@@ -24,9 +25,15 @@ library(readxl) # read execel files
 library(readr) # utilities
 
 # user defined functions
-# readTables
+
+# chooseCols - select columns of data according to regex
+# createPopulationTable - create population table based off immigration or not
+# random_sim - run run_sim with random parameters for beta, alpha, and chi
+# readTable - read immigration table from yearbook webpage
+# run_sim - run romer growth model simulation
 
 # data
+data(compiledData) # our data of GDP and immigration by GeoName and Industry
 ```
 # Obtaining the data
 
@@ -106,7 +113,7 @@ readTable <- function(url) {
 # Use 2013, 2004 and scrape 2014-2017
 dataPath <- paste0(substr(dataPath, 1, nchar(dataPath)-4),"Immigration/")
 ```
-```{r}
+```{r message = FALSE, warning = FALSE}
 # Scrape data from 2014-2017
 immigrants <- NA
 immigrants <- data.frame(stringsAsFactors = FALSE)
@@ -175,7 +182,10 @@ perCapitaGDP <- fread(file = paste0(dataPath,"SAGDP10.csv"))
 ```
 
 ## Join two data sets
-```{r}
+
+Now let us join the GDP data and imigration data into a single table.
+
+```{r warning = FALSE}
 econData <- nominalGDP %>%
   rbind(compensationGDP) %>%
   rbind(realGDP) %>%
@@ -199,7 +209,7 @@ for (i in 1:length(names)) {
 }
 colnames(immigrants) <- names
 # Change total name
-immigrants[1,1] <- "United States*"
+immigrants[1,1] <- "United States"
 compiledData <- econData %>%
   left_join(immigrants, by = c("GeoName" = "State or Territory of Residence"))
 ```
@@ -208,6 +218,23 @@ compiledData <- econData %>%
 
 # Simulating the Romer Growth Model
 
+The Romer Growth model is a growth model in economics thats endogenizes the TFP
+(Total Factor Productivity) variable. It basically is a production model that
+divides labor between production of goods and services and the produciton of
+ideas. Below we use the idea that the growth rate of per worker production (per
+capita GDP) is based off of beta, exponent of capital in production function, alpha,
+percentage of population devoted to production of ideas, and chi, the productivity of
+the workers producing ideas. It is also based on the total population.
+
+As an equation we can then state if in steady state:
+\[g_{y^*} = \frac{1}{1-\beta}g_A = \frac{1}{1-\beta}\chi\alpha\overline{N}\]
+
+The steady state is the point at which investment in the economy merely replaces
+depreciating capital and buying capital for new workers.
+
+## User Functions
+
+Let's create a function to choose columns we want: (like select clause of SQL)
 ```{r}
 chooseCols <- function(x, regex) {
   cols <- grep(regex, names(x), value=TRUE)
@@ -215,9 +242,12 @@ chooseCols <- function(x, regex) {
 }
 ```
 
+Next let us calculate the population of the regions based off real GDP and per capita
+GDP.
+
 ```{r}
 # Returns table of population in millions
-createPopulationTable <- function() {
+createPopulationTable <- function(immigrants = TRUE) {
   # Divide real GDP by percapita
   real <- compiledData %>%
     filter(TableName == "SAGDP9N" & IndustryId == 1)
@@ -228,11 +258,27 @@ createPopulationTable <- function() {
   pop <- real
   cols <- names(per)
   for (i in 2:length(cols)) {
-    pop[,paste0(cols[i])] <- real[,paste0(cols[i])] / per[,paste0(cols[i])]
+    if(immigrants == TRUE) {
+      pop[,paste0(cols[i])] <- real[,paste0(cols[i])] / per[,paste0(cols[i])]
+    } else {
+      year <- 1995 + i
+      immigrants <- compiledData %>%
+          filter(TableName == "SAGDP10N") %>%
+          chooseCols(paste0("^(Immigrants: ",as.character(year),"|GeoName)"))
+      pop[,paste0(cols[i])] <- (real[,paste0(cols[i])] / per[,paste0(cols[i])]) - (immigrants[,2] / 1000000)
+    }
   }
   return(pop)
 }
 ```
+```{r warning = FALSE}
+bop <- createPopulationTable(FALSE)
+head(bop)
+bop <- createPopulationTable(TRUE)
+head(bop)
+```
+
+## Getting the data
 
 ```{r}
 # per capita GDP is tableName SAGDP10N
@@ -242,36 +288,171 @@ outputPerWorker <- chooseCols(perCapitaGDP, "^(GDP:|GeoName)")
 head(outputPerWorker)
 ```
 
+## Creating a basic simulation
+
+Now we can create a simulation to test what steady state growth would be with and
+without immigrants.
+
 ```{r}
 # Romer growth parameters
-beta <- 0.3
-alpha <- 0.2
-chi <- 0.04
+b <- 0.3
+a <- 0.2
+c <- 0.04
 # Population in millions
-population <- createPopulationTable()
-growth <- population
-cols <- names(population)
-colsGrowth <- gsub("GDP:","Growth:",cols)
-for (i in 2:length(cols)) {
-  growth[,paste0(colsGrowth[i])] <- (1 / (1 - beta)) * alpha * chi * population[,paste0(cols[i])]
+run_sim <- function(beta, alpha, chi, area = "United States",immigrants = TRUE) {
+  row <- grep(area, unique(perCapitaGDP$GeoName))
+  population <- createPopulationTable(immigrants)
+  growth <- population
+  cols <- names(population)
+  colsGrowth <- gsub("GDP:","Growth:",cols)
+  for (i in 2:length(cols)) {
+    growth[,paste0(colsGrowth[i])] <- (1 / (1 - beta)) * alpha * chi * population[,paste0(cols[i])]
+  }
+  growth <- chooseCols(growth, "^(Growth:|GeoName)")
+  # Show graph of PerCapita and growth
+  years <- grep("[0-9]$", names(outputPerWorker), value=TRUE)
+  years <- as.numeric(gsub("GDP: ","",years))
+  totalper <- as.numeric((as.vector(outputPerWorker[row,c(2:22)])))
+  data <- data.frame(year = years, output = totalper)
+  growthPaths <- data %>%
+    ggplot(aes(x = year, y = output)) +
+    geom_point()
+  
+  for (i in 1:length(years)) {
+    currentYear <- years[i]
+    if (i == 1) {
+      yearVal <- seq(from = currentYear, to = (currentYear + 1), by = 0.01)
+      delta <- outputPerWorker[row,(i + 1)] * (growth[row,(i + 1)] / 100)
+      out <- (yearVal - currentYear) * delta  + outputPerWorker[row,(i + 1)]
+    } else {
+      currentYears <- seq(from = currentYear, to = (currentYear + 1), by = 0.01)
+      yearVal <- c(yearVal, currentYears)
+      delta <- outputPerWorker[row,(i + 1)] * (growth[row,(i + 1)] / 100)
+      out <- c(out, (currentYears - currentYear) * delta + outputPerWorker[row,(i + 1)])
+    }
+  }
+  slope <- data.frame(yearVal = yearVal, out = out)
+  growthPaths <- growthPaths +
+    geom_line(data = slope, aes(x = yearVal, y = out, color = "Romer Steady State"))
+  growthPaths <- growthPaths +
+    ggtitle("GDP Growth over time") +
+    xlab("Year") +
+    ylab("Per Capita GDP ($)")
+  
+  avgGrowth <- mean(as.numeric((as.vector(growth[row,c(2:22)]))))
+  return(list(growthPaths, avgGrowth))
 }
-growth <- chooseCols(growth, "^(Growth:|GeoName)")
-head(growth)
 ```
 
-```{r}
-# Show graph of PerCapita and growth
-years <- grep("[0-9]$", names(outputPerWorker), value=TRUE)
-years <- as.numeric(gsub("GDP: ","",years))
-totalper <- as.numeric((as.vector(outputPerWorker[1,c(2:22)])))
-data <- data.frame(year = years, output = totalper)
+
+When we run the sim with preset values we can see the growth of the economy as
+a whole versus the growth of Alaska's economy. When the line connects the dots
+the economy is approximately at a steady state, but when the dot is more of a step
+from the line, there must be some sort of shock to the economy. Knowing this you can
+see that Alaska's economy only changes due to shock's in TFP. This follows assumptions
+of the Solow growth model and implies that Alaska is not working to produce it's own
+techonologies, which can be reflective of smaller nations around the world.
+
+```{r warning = FALSE}
+run_sim(b, a, c, area = "United States", immigrants = TRUE)[[1]]
+run_sim(b, a, c, area = "Alaska", immigrants = FALSE)[[1]]
+```
+
+## Randomizing the simulation
+
+Now let us randomize the parameters to our growth rate and see how immigrants can effect the
+growth rate.
+
+```{r warning = FALSE}
+random_sim <- function(area = "United States", immigrants = TRUE) {
+  beta <- runif(1)
+  alpha <- runif(1)
+  chi <- 1 / rexp(1, rate = 0.005) # weight productivity low
+  if (chi >= 1) {
+    chi <- 1
+  }
+  run_sim(beta = beta, alpha = alpha, chi = chi, area = area, immigrants = immigrants)
+}
+simulations <- mosaic::do(40) * random_sim(area = "United States", immigrants = FALSE)
+data <- data.frame(growths = unlist(simulations$V2))
+data <- data %>%
+  filter(growths <= 25)
 data %>%
-  ggplot(aes(x = year, y = output)) +
-  geom_point()
+  ggplot(aes(x = growths)) +
+  geom_density() +
+  xlab("Avg Growth of y") +
+  ggtitle("Per Worker Production growth rate (%) without Immigration") +
+  geom_rug(aes(color = "Simulated Observed Rate"))
+simulations <- mosaic::do(40) * random_sim(area = "United States", immigrants = TRUE)
+data <- data.frame(growths = unlist(simulations$V2))
+data <- data %>%
+  filter(growths <= 25)
+data %>%
+  ggplot(aes(x = growths)) +
+  geom_density() +
+  xlab("Avg Growth of y") +
+  ggtitle("Per Worker Production growth rate (%) with Immigration") +
+  geom_rug(aes(color = "Simulated Observed Rate"))
 ```
 
+You can see that the growth rates with immigrants are slightly higher, but there
+is not much of an impact on the economy as a whole. This would imply that our
+current influx of immigrants also does not decrease per capita GDP or per worker
+production, because the affect is has on per capita GDP would scale with its
+effect on the growth rate. What about a smaller area of the economy with a proportionately
+larger amount of immigrants? We can look at Texas.
 
+```{r warning = FALSE}
+simulations <- mosaic::do(40, parallel = FALSE) * random_sim(area = "Texas", immigrants = FALSE)
+data <- data.frame(growths = unlist(simulations$V2))
+data <- data %>%
+  filter(growths <= 25)
+data %>%
+  ggplot(aes(x = growths)) +
+  geom_density() +
+  xlab("Avg Growth of y") +
+  ggtitle("Per Worker Production growth rate (%) without Immigration") +
+  geom_rug(aes(color = "Simulated Observed Rate"))
+simulations <- mosaic::do(40, parallel = FALSE) * random_sim(area = "Texas", immigrants = TRUE)
+data <- data.frame(growths = unlist(simulations$V2))
+data <- data %>%
+  filter(growths <= 25)
+data %>%
+  ggplot(aes(x = growths)) +
+  geom_density() +
+  xlab("Avg Growth of y") +
+  ggtitle("Per Worker Production growth rate (%) with Immigration") +
+  geom_rug(aes(color = "Simulated Observed Rate"))
+```
 
+In Texas you can definitely see that immigration would have a larger effect on the
+growth rate of the economy, but this also means it would have a larger short term effect
+of decreasing real per capita GDP. In layman's terms in the short run Texans are more
+likely to earn less money on average, but in the long run the Texan economy is likely
+to grow at a faster rate.
 
+## Processing the simulation
 
+```{r warning = FALSE}
+simsRun <- c(75,200,350,500)
+withParallel <- c(0,0,0,0)
+withoutParallel<- c(0,0,0,0)
+timeData <- data.frame(simsRun, withoutParallel = withoutParallel, withParallel = withParallel)
+for (i in 1:4) {
+  ptm <- Sys.time()
+  mosaic::do(simsRun[i]) * random_sim(area = "United States", immigrants = FALSE)
+  timeData[i,3] <- Sys.time() - ptm
+}
+for (i in 1:4) {
+  ptm <- Sys.time()
+  mosaic::do(simsRun[i], parallel = FALSE) * random_sim(area = "United States", immigrants = FALSE)
+  timeData[i,2] <- Sys.time() - ptm
+}
+head(timeData)
+```
 
+Here I wanted to show my reasoning for running without being in parallel for the
+earlier simulation. Due to some kind of processing overhead, at only 40 simulations,
+it is actually faster to run without parallel processes and at some line between 200
+and 500 it does actually become faster to run in parallel. To me this implies there
+isn't code that does a redudant/similar thing a lot of the times to make the simulation slow.

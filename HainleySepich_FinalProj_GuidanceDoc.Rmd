@@ -79,15 +79,17 @@ Made GDP tables, now scrape immigration data.
 
 (A) .Rmd Line number(s) for statistical modeling/supervised learning:  
 
-**Connor does this**
+
 
 (B) .Rmd Line number(s) for unsupervised learning: 
 
-**Joe will do this**
+**Connor will do this**
 
 (C) .Rmd Line number(s) for user-defined simulation(s): 
 
 **Joe will do this** 
+
+(D)
 
 (E) .Rmd Line number(s) for R tools for "big data": 
 
